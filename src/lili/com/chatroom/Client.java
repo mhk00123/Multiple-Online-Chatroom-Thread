@@ -13,6 +13,7 @@ import java.net.UnknownHostException;
 /**
  * *在線聊天室 : Client 端
  * *v3.0可收發多條信息
+ * *v4.0加入多線程 - 多客戶收發
  * @author LiLi-PC
  *
  */
