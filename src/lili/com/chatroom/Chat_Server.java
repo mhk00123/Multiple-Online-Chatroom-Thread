@@ -1,5 +1,7 @@
 package lili.com.chatroom;
 
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -20,6 +22,18 @@ public class Chat_Server {
 		Socket client = server.accept();
 		System.out.println("一個客戶端建立了連接");
 		
+		//3. 接收消息 - DataInputStream
+		DataInputStream dis = new DataInputStream(client.getInputStream());
+		String msg = dis.readUTF();
+		
+		//4. 返回消息 DataOutputStream
+		DataOutputStream dos = new DataOutputStream(client.getOutputStream());
+		dos.writeUTF(msg);
+		dos.flush();
+		
+		//Close - 先開後放(Server不關)
+		dis.close();
+		dos.close();
 		
 	}
 }
