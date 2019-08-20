@@ -12,6 +12,7 @@ import java.net.UnknownHostException;
 
 /**
  * *在線聊天室 : Client 端
+ * *v3.0可收發多條信息
  * @author LiLi-PC
  *
  */
@@ -25,16 +26,19 @@ public class Client {
 		//2.     客戶發送信息 - OutputStream
 		//2.1  由控制台輸入
 		BufferedReader console = new BufferedReader(new InputStreamReader(System.in));
-		String msg = console.readLine();
-		
 		DataOutputStream dos = new DataOutputStream(client.getOutputStream());
-		dos.writeUTF(msg);
-		dos.flush();
-		
-		//3. 獲取回傳message
 		DataInputStream dis = new DataInputStream(client.getInputStream());
-		msg = dis.readUTF();
-		System.out.println(msg);
+		
+		boolean isRunning = true;
+		while(isRunning) {
+			String msg = console.readLine();
+			dos.writeUTF(msg);
+			dos.flush();
+			
+			//3. 獲取回傳message
+			msg = dis.readUTF();
+			System.out.println(msg);
+		}
 		
 		//Close - 先開後放
 		dis.close();

@@ -8,6 +8,7 @@ import java.net.Socket;
 
 /**
  * *在線聊天室 : Chat Server 端
+ * *v3.0可收發多條信息
  * @author LiLi-PC
  *
  */
@@ -22,14 +23,18 @@ public class Chat_Server {
 		Socket client = server.accept();
 		System.out.println("一個客戶端建立了連接");
 		
-		//3. 接收消息 - DataInputStream
 		DataInputStream dis = new DataInputStream(client.getInputStream());
-		String msg = dis.readUTF();
-		
-		//4. 返回消息 DataOutputStream
 		DataOutputStream dos = new DataOutputStream(client.getOutputStream());
-		dos.writeUTF(msg);
-		dos.flush();
+		
+		boolean isRunning = true;
+		while(isRunning){
+			//3. 接收消息 - DataInputStream
+			String msg = dis.readUTF();
+			
+			//4. 返回消息 DataOutputStream
+			dos.writeUTF(msg);
+			dos.flush();
+		}
 		
 		//Close - 先開後放(Server不關)
 		dis.close();
