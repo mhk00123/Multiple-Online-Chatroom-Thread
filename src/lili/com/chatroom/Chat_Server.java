@@ -10,6 +10,7 @@ import java.net.Socket;
  * *在線聊天室 : Chat Server 端
  * *v3.0可收發多條信息
  * *v4.0加入多線程 - 多客戶收發
+ * *v5.0封裝多線程物件
  * @author LiLi-PC
  *
  */
@@ -23,62 +24,82 @@ public class Chat_Server {
 		//2. 阻塞式等待連接 accept - 創建Socket物件
 		while(true) {
 			Socket client = server.accept();
-			System.out.println("一個客戶端建立了連接");
+			System.out.println("一個客戶端建立了連接");			
 			
-			new Thread(()->{
-				DataInputStream dis = null;
-				DataOutputStream dos = null;
-				try {
-					dis = new DataInputStream(client.getInputStream());
-					dos = new DataOutputStream(client.getOutputStream());
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-				
-				boolean isRunning = true;
-				while(isRunning){
-					//3. 接收消息 - DataInputStream
-					String msg = null;
-					try {
-						if(dis!=null) {
-							msg = dis.readUTF();
-						}
-						
-					} catch (IOException e) {
-						e.printStackTrace();
-						isRunning = false; //出錯了就要停止線
-					}
-					
-					//4. 返回消息 DataOutputStream
-					try {
-						dos.writeUTF(msg);
-						dos.flush();
-					} catch (IOException e) {
-						e.printStackTrace();
-					}
-					
-				}
-				
-				//Close - 先開後放(Server不關)
-				try {
-					if(dis!=null) {
-						dis.close();
-					}
-					
-					if(dos!=null) {
-						dos.close();
-					}
-					
-					if(client!=null) {
-						client.close();
-					}
-				} catch (IOException e) {
-
-					e.printStackTrace();
-				}
-
-			}).start();
-			
+			//加入多線程(3+4+5)
+			new Thread(new Channel(client)).start();
 		}
 	}
+
+	//*封裝Channel 
+	//*1個客戶 = 1個Channel
+	static class Channel implements Runnable{
+		private DataInputStream dis = null;
+		private DataOutputStream dos = null;
+		private boolean isRunning;
+		private Socket client;
+		
+		//Constructor
+		public Channel(Socket client) {
+			this.client = client;
+			
+			try {
+				dis = new DataInputStream(client.getInputStream());
+				dos = new DataOutputStream(client.getOutputStream());
+				isRunning = true;
+			} catch (IOException e) {
+				e.printStackTrace();
+				System.out.println("--------構建錯誤--------");
+				//如果出錯了直接結束 - 釋放資源
+				release();
+			}
+		}
+		
+		@Override
+		public void run() {
+			while(isRunning) {
+				//1. 接收消息
+				String msg = receive();
+				//如接收不為空才繼續
+				if(!msg.equals("")) {
+					//2. 發送消息
+					send(msg);
+				}
+			}
+		}
+		
+		//1. 接收消息
+		private String receive() {
+			String msg = "";
+			try {
+				msg = dis.readUTF();
+			} catch (IOException e) {
+				e.printStackTrace();
+				System.out.println("--------接收錯誤--------");
+				//如果出錯了直接結束 - 釋放資源
+				release();
+			}
+			return msg;
+		}
+		//2. 發送消息
+		private void send(String msg) {
+			try {
+				dos.writeUTF(msg);
+				dos.flush();
+			} catch (IOException e) {
+				e.printStackTrace();
+				System.out.println("--------發送錯誤--------");
+				//如果出錯了直接結束 - 釋放資源
+				release();
+			}
+		}
+		//3. 釋放資源
+		private void release() {
+			//把上面的While停止
+			this.isRunning = false;
+			//Close - 先開後放(Server不關)
+			Utils.close(dos, dis, client);
+		}
+	}
+
 }

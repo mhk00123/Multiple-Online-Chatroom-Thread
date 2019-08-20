@@ -14,6 +14,7 @@ import java.net.UnknownHostException;
  * *在線聊天室 : Client 端
  * *v3.0可收發多條信息
  * *v4.0加入多線程 - 多客戶收發
+ * *v5.0封裝多線程物件
  * @author LiLi-PC
  *
  */
@@ -26,24 +27,10 @@ public class Client {
 		
 		//2.     客戶發送信息 - OutputStream
 		//2.1  由控制台輸入
-		BufferedReader console = new BufferedReader(new InputStreamReader(System.in));
-		DataOutputStream dos = new DataOutputStream(client.getOutputStream());
-		DataInputStream dis = new DataInputStream(client.getInputStream());
+		new Thread(new Send(client)).start();
 		
-		boolean isRunning = true;
-		while(isRunning) {
-			String msg = console.readLine();
-			dos.writeUTF(msg);
-			dos.flush();
-			
-			//3. 獲取回傳message
-			msg = dis.readUTF();
-			System.out.println(msg);
-		}
-		
-		//Close - 先開後放
-		dis.close();
-		dos.close();
-		client.close();
+		//3.  取得消息
+		new Thread(new Receive(client)).start();
+
 	}
 }
