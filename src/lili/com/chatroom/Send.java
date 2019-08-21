@@ -40,7 +40,6 @@ public class Send implements Runnable{
 		try {
 			return console.readLine();
 		} catch (IOException e) {
-			e.printStackTrace();
 			release();
 		}
 		return "";
@@ -56,7 +55,6 @@ public class Send implements Runnable{
 			dos.writeUTF(msg);
 			dos.flush();
 		} catch (IOException e) {
-			e.printStackTrace();
 			System.out.println("--------發送錯誤--------");
 			//如果出錯了直接結束 - 釋放資源
 			release();

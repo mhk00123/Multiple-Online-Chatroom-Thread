@@ -15,6 +15,7 @@ import java.net.UnknownHostException;
  * *v3.0可收發多條信息
  * *v4.0加入多線程 - 多客戶收發
  * *v5.0封裝多線程物件
+ * *v6.0加入容器 - 把通道加到容器中
  * @author LiLi-PC
  *
  */

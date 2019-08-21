@@ -22,7 +22,6 @@ public class Receive implements Runnable{
 			dis = new DataInputStream(client.getInputStream());
 			isRunning = true;
 		} catch (IOException e) {
-			e.printStackTrace();
 			release();
 		}
 	}
@@ -38,7 +37,6 @@ public class Receive implements Runnable{
 		try {
 			msg = dis.readUTF();
 		} catch (IOException e) {
-			e.printStackTrace();
 			System.out.println("--------接收錯誤--------");
 			//如果出錯了直接結束 - 釋放資源
 			release();
