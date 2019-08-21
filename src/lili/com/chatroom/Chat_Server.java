@@ -13,6 +13,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
  * *v4.0加入多線程 - 多客戶收發
  * *v5.0封裝多線程物件
  * *v6.0加入容器 - 把通道加到容器中
+ * *v7.0封裝全體發送方法
  * @author LiLi-PC
  *
  */
@@ -70,7 +71,8 @@ public class Chat_Server {
 				//如接收不為空才繼續
 				if(!msg.equals("")) {
 					//2. 發送消息
-					send(msg);
+					//v7.0 全體發送
+					sendOthers(msg);
 				}
 			}
 		}
@@ -98,6 +100,20 @@ public class Chat_Server {
 				release();
 			}
 		}
+		
+		//v7.0 - 全體發送
+		private void sendOthers(String msg) {
+			//取得Channel所有成員 - 所有有線程的成員(包含自己)
+			for(Channel other:all) {
+				//群發 - 不用發給自己 - 此處保留
+				if(other == this) {
+					continue;
+				}
+				//此處的send為其他成員(Channel)里的send()
+				other.send(msg);
+			}
+		}
+		
 		//3. 釋放資源
 		private void release() {
 			//把上面的While停止
