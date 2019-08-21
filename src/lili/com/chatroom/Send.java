@@ -7,6 +7,7 @@ import java.io.InputStreamReader;
 import java.net.Socket;
 
 /**
+ * *v8.0加入用戶名
  * *工具類
  * *發送端
  * @author LiLi-PC
@@ -17,14 +18,21 @@ public class Send implements Runnable{
 	private boolean isRunning;
 	private BufferedReader console;
 	private DataOutputStream dos;
+	private String name;
+	
 	//Constructor
-	public Send(Socket client) {
+	public Send(Socket client, String name) {
 		this.client = client;
 		this.isRunning = true;
-		
 		console = new BufferedReader(new InputStreamReader(System.in));
+ 
+		//*v8.0加入用戶名
+		this.name = name;
+		
 		try {
 			dos = new DataOutputStream(client.getOutputStream());
+			//*v8.0加入用戶名
+			send(name);
 		} catch (IOException e) {
 			e.printStackTrace();
 			release();

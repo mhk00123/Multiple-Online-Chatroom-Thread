@@ -14,6 +14,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
  * *v5.0封裝多線程物件
  * *v6.0加入容器 - 把通道加到容器中
  * *v7.0封裝全體發送方法
+ * *v8.0加入用戶名
  * @author LiLi-PC
  *
  */
@@ -47,6 +48,8 @@ public class Chat_Server {
 		private DataOutputStream dos = null;
 		private boolean isRunning;
 		private Socket client;
+		//*v8.0加入用戶名
+		private String name;
 		
 		//Constructor
 		public Channel(Socket client) {
@@ -55,7 +58,11 @@ public class Chat_Server {
 			try {
 				dis = new DataInputStream(client.getInputStream());
 				dos = new DataOutputStream(client.getOutputStream());
+				//*v8.0加入用戶名
+				this.name = receive();
+				
 				isRunning = true;
+				
 			} catch (IOException e) {
 				System.out.println("--------構建錯誤--------");
 				//如果出錯了直接結束 - 釋放資源
@@ -110,7 +117,7 @@ public class Chat_Server {
 					continue;
 				}
 				//此處的send為其他成員(Channel)里的send()
-				other.send(msg);
+				other.send(this.name +"說:"+ msg);
 			}
 		}
 		
