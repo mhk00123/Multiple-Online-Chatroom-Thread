@@ -15,6 +15,8 @@ import java.util.concurrent.CopyOnWriteArrayList;
  * *v6.0加入容器 - 把通道加到容器中
  * *v7.0封裝全體發送方法
  * *v8.0加入用戶名
+ * *v8.1加入歡迎信息
+ * 
  * @author LiLi-PC
  *
  */
@@ -60,6 +62,10 @@ public class Chat_Server {
 				dos = new DataOutputStream(client.getOutputStream());
 				//*v8.0加入用戶名
 				this.name = receive();
+				//*v8.1加入歡迎信息
+				this.send(this.name + "進入伺服器");
+				//對在線程中的人廣播
+				sendOthers(this.name + "進入聊天室");
 				
 				isRunning = true;
 				
