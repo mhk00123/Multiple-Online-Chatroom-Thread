@@ -16,6 +16,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
  * *v7.0封裝全體發送方法
  * *v8.0加入用戶名
  * *v8.1加入歡迎信息
+ * *v8.2封裝系統消息
  * 
  * @author LiLi-PC
  *
@@ -63,9 +64,9 @@ public class Chat_Server {
 				//*v8.0加入用戶名
 				this.name = receive();
 				//*v8.1加入歡迎信息
-				this.send(this.name + "進入伺服器");
+				this.send("歡迎" + this.name + "進入伺服器");
 				//對在線程中的人廣播
-				sendOthers(this.name + "進入聊天室");
+				sendOthers(this.name + "進入聊天室", true);
 				
 				isRunning = true;
 				
@@ -85,7 +86,7 @@ public class Chat_Server {
 				if(!msg.equals("")) {
 					//2. 發送消息
 					//v7.0 全體發送
-					sendOthers(msg);
+					sendOthers(msg, false);
 				}
 			}
 		}
@@ -115,15 +116,23 @@ public class Chat_Server {
 		}
 		
 		//v7.0 - 全體發送
-		private void sendOthers(String msg) {
+		private void sendOthers(String msg, boolean isSys) {
 			//取得Channel所有成員 - 所有有線程的成員(包含自己)
 			for(Channel other:all) {
 				//群發 - 不用發給自己 - 此處保留
 				if(other == this) {
 					continue;
 				}
-				//此處的send為其他成員(Channel)里的send()
-				other.send(this.name +"說:"+ msg);
+				
+				//v8.2封裝系統消息
+				if(isSys) {
+					//此處的send為其他成員(Channel)里的send()
+					other.send(msg);	
+				}
+				else if(!isSys){
+					//此處的send為其他成員(Channel)里的send()
+					other.send(this.name +"說:"+ msg);	
+				}
 			}
 		}
 		
